@@ -51,3 +51,9 @@ func GetUserID(ctx context.Context) string {
 	userID, _ := ctx.Value(userIDKey).(string)
 	return userID
 }
+
+// UserIDKeyForTest returns the context key used for user ID storage.
+// This is intended for use in tests that need to inject a user ID into context.
+func UserIDKeyForTest() contextKey {
+	return userIDKey
+}
