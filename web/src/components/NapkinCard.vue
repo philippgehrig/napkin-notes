@@ -1,29 +1,48 @@
 <template>
   <div
+    ref="cardRef"
     class="napkin-card"
     :style="{ transform: `rotate(${rotation}deg)` }"
-    @click="$emit('open', note.id)"
+    @click="handleClick"
   >
-    <NapkinTexture width="100%" height="100%">
-      <div class="napkin-card__content">
-        {{ preview }}
-      </div>
-    </NapkinTexture>
+    <RipAnimation :progress="progress" :is-active="isRipping">
+      <NapkinTexture width="100%" height="100%">
+        <div class="napkin-card__content">
+          {{ preview }}
+        </div>
+      </NapkinTexture>
+    </RipAnimation>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import NapkinTexture from './NapkinTexture.vue'
+import RipAnimation from './RipAnimation.vue'
+import { useRipGesture } from '../composables/useRipGesture'
 import type { Note } from '../stores/notesStore'
 
 const props = defineProps<{
   note: Note
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   open: [id: string]
+  rip: [id: string]
 }>()
+
+const cardRef = ref<HTMLElement | null>(null)
+
+const { isRipping, progress } = useRipGesture(cardRef, {
+  onRip: () => emit('rip', props.note.id),
+})
+
+function handleClick() {
+  // Only emit open if we're not currently in a rip gesture
+  if (!isRipping.value) {
+    emit('open', props.note.id)
+  }
+}
 
 const rotation = computed(() => {
   let hash = 0
@@ -50,6 +69,7 @@ const preview = computed(() => {
   height: 200px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  touch-action: none;
 }
 
 .napkin-card:hover {

@@ -19,6 +19,7 @@
         :key="note.id"
         :note="note"
         @open="openNote"
+        @rip="handleRip"
       />
     </div>
   </div>
@@ -39,6 +40,10 @@ onMounted(() => {
 
 function openNote(id: string) {
   router.push(`/note/${id}`)
+}
+
+function handleRip(id: string) {
+  store.deleteNote(id)
 }
 
 function createNew() {
