@@ -13,6 +13,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/philippgehrig/napkin-notes/services/api/internal/auth"
 	"github.com/philippgehrig/napkin-notes/services/api/internal/database"
+	"github.com/philippgehrig/napkin-notes/services/api/internal/export"
 	"github.com/philippgehrig/napkin-notes/services/api/internal/fonts"
 	"github.com/philippgehrig/napkin-notes/services/api/internal/notes"
 	"github.com/philippgehrig/napkin-notes/services/api/internal/repository"
@@ -121,6 +122,8 @@ func main() {
 		noteSvc := notes.NewService(noteRepo)
 		noteHandler := notes.NewHandler(noteSvc)
 
+		exportHandler := export.NewHandler(noteSvc)
+
 		r.Route("/api/notes", func(r chi.Router) {
 			r.Use(authMw.Authenticate)
 			r.Get("/", noteHandler.List)
@@ -130,6 +133,7 @@ func main() {
 			r.Put("/{id}", noteHandler.Update)
 			r.Delete("/{id}", noteHandler.Delete)
 			r.Post("/{id}/restore", noteHandler.Restore)
+			r.Get("/{id}/export", exportHandler.Export)
 		})
 
 		// Fonts routes (authenticated)
