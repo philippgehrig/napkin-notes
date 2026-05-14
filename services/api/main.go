@@ -13,6 +13,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/philippgehrig/napkin-notes/services/api/internal/auth"
 	"github.com/philippgehrig/napkin-notes/services/api/internal/database"
+	"github.com/philippgehrig/napkin-notes/services/api/internal/notes"
 	"github.com/philippgehrig/napkin-notes/services/api/internal/repository"
 )
 
@@ -110,6 +111,23 @@ func main() {
 			r.Post("/register", authHandler.Register)
 			r.Post("/login", authHandler.Login)
 			r.Post("/refresh", authHandler.Refresh)
+		})
+
+		// Notes routes (authenticated)
+		authMw := auth.NewAuthMiddleware(jwtSvc)
+		noteRepo := repository.NewPostgresNoteRepo(db)
+		noteSvc := notes.NewService(noteRepo)
+		noteHandler := notes.NewHandler(noteSvc)
+
+		r.Route("/api/notes", func(r chi.Router) {
+			r.Use(authMw.Authenticate)
+			r.Get("/", noteHandler.List)
+			r.Post("/", noteHandler.Create)
+			r.Get("/trash", noteHandler.ListTrashed)
+			r.Get("/{id}", noteHandler.GetByID)
+			r.Put("/{id}", noteHandler.Update)
+			r.Delete("/{id}", noteHandler.Delete)
+			r.Post("/{id}/restore", noteHandler.Restore)
 		})
 	}
 
