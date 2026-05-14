@@ -2,7 +2,10 @@
   <div class="editor">
     <header class="editor__header">
       <button class="editor__back-btn" @click="goBack">← Back</button>
-      <button class="editor__save-btn" @click="save">Save</button>
+      <div class="editor__actions">
+        <ExportButton v-if="noteId" :noteId="noteId" />
+        <button class="editor__save-btn" @click="save">Save</button>
+      </div>
     </header>
 
     <div class="editor__wrapper">
@@ -23,6 +26,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useNotesStore } from '../stores/notesStore'
 import NapkinTexture from '../components/NapkinTexture.vue'
+import ExportButton from '../components/ExportButton.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -81,6 +85,12 @@ async function save() {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
+}
+
+.editor__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .editor__back-btn,
