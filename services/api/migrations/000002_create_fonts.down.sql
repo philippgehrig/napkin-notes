@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS fonts;
+DROP TYPE IF EXISTS font_status;
