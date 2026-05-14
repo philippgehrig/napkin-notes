@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import { useAuthStore } from './stores/authStore'
+import AppNav from './components/AppNav.vue'
+
+const auth = useAuthStore()
 </script>
 
 <template>
-  <HelloWorld />
+  <AppNav v-if="auth.isAuthenticated" />
+  <router-view />
 </template>
