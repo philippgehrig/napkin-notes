@@ -1,6 +1,8 @@
-.PHONY: test test-api test-web test-fontforge dev
+.PHONY: test test-api test-web test-fontforge test-e2e test-all dev
 
 test: test-api test-web test-fontforge
+
+test-all: test test-e2e
 
 test-api:
 	cd services/api && go test ./...
@@ -10,6 +12,9 @@ test-web:
 
 test-fontforge:
 	cd services/fontforge && python3 -m pytest tests/ -v
+
+test-e2e:
+	cd e2e && npx playwright test
 
 dev:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build
