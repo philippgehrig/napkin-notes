@@ -17,10 +17,10 @@ test-e2e:
 	cd e2e && npx playwright test
 
 dev:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build
+	docker compose -f docker/docker-compose.dev.yml up --build
 
 dev-down:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down
+	docker compose -f docker/docker-compose.dev.yml down
 
 prod:
 	docker compose -f docker/docker-compose.yml up --build -d
