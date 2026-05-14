@@ -13,8 +13,10 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/philippgehrig/napkin-notes/services/api/internal/auth"
 	"github.com/philippgehrig/napkin-notes/services/api/internal/database"
+	"github.com/philippgehrig/napkin-notes/services/api/internal/fonts"
 	"github.com/philippgehrig/napkin-notes/services/api/internal/notes"
 	"github.com/philippgehrig/napkin-notes/services/api/internal/repository"
+	"github.com/philippgehrig/napkin-notes/services/api/internal/storage"
 )
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
@@ -128,6 +130,25 @@ func main() {
 			r.Put("/{id}", noteHandler.Update)
 			r.Delete("/{id}", noteHandler.Delete)
 			r.Post("/{id}/restore", noteHandler.Restore)
+		})
+
+		// Fonts routes (authenticated)
+		storagePath := os.Getenv("STORAGE_PATH")
+		if storagePath == "" {
+			storagePath = "./storage"
+		}
+		fileStorage := storage.NewLocalStorage(storagePath)
+		fontRepo := repository.NewPostgresFontRepo(db)
+		fontSvc := fonts.NewService(fontRepo, fileStorage)
+		fontHandler := fonts.NewHandler(fontSvc)
+
+		r.Route("/api/fonts", func(r chi.Router) {
+			r.Use(authMw.Authenticate)
+			r.Get("/", fontHandler.List)
+			r.Post("/", fontHandler.Upload)
+			r.Get("/{id}", fontHandler.GetByID)
+			r.Get("/{id}/file", fontHandler.ServeFile)
+			r.Delete("/{id}", fontHandler.Delete)
 		})
 	}
 
