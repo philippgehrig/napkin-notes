@@ -12,7 +12,13 @@ test-fontforge:
 	cd services/fontforge && python3 -m pytest tests/ -v
 
 dev:
-	@echo "Starting development services..."
-	@echo "API:       cd services/api && go run main.go"
-	@echo "Web:       cd web && npm run dev"
-	@echo "Fontforge: cd services/fontforge && python3 worker.py"
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build
+
+dev-down:
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down
+
+prod:
+	docker compose -f docker/docker-compose.yml up --build -d
+
+prod-down:
+	docker compose -f docker/docker-compose.yml down
