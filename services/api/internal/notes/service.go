@@ -24,6 +24,7 @@ type NoteRepository interface {
 	SoftDelete(ctx context.Context, id string) error
 	Restore(ctx context.Context, id string) error
 	ListTrashed(ctx context.Context, userID string, limit, offset int) ([]*models.Note, error)
+	PermanentDelete(ctx context.Context, id string) error
 }
 
 // Service provides business logic for note operations.
@@ -116,6 +117,18 @@ func (s *Service) Restore(ctx context.Context, id, userID string) (*models.Note,
 func (s *Service) ListTrashed(ctx context.Context, userID string, limit, offset int) ([]*models.Note, error) {
 	limit = capLimit(limit)
 	return s.repo.ListTrashed(ctx, userID, limit, offset)
+}
+
+// PermanentDelete permanently removes a note from the database, scoped to the given user.
+func (s *Service) PermanentDelete(ctx context.Context, id, userID string) error {
+	note, err := s.repo.GetByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	if note.UserID != userID {
+		return ErrNoteNotFound
+	}
+	return s.repo.PermanentDelete(ctx, id)
 }
 
 // capLimit enforces default and maximum limits.

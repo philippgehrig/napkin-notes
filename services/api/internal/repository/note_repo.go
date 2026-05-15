@@ -138,6 +138,25 @@ func (r *PostgresNoteRepo) Restore(ctx context.Context, id string) error {
 	return nil
 }
 
+// PermanentDelete removes a note from the database permanently.
+func (r *PostgresNoteRepo) PermanentDelete(ctx context.Context, id string) error {
+	query := `DELETE FROM notes WHERE id = $1`
+
+	result, err := r.db.ExecContext(ctx, query, id)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return notes.ErrNoteNotFound
+	}
+	return nil
+}
+
 // ListTrashed returns soft-deleted notes for a user with pagination.
 func (r *PostgresNoteRepo) ListTrashed(ctx context.Context, userID string, limit, offset int) ([]*models.Note, error) {
 	query := `

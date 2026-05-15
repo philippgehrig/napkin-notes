@@ -39,6 +39,7 @@ func setupTestRouter(userID string) (*chi.Mux, *Service) {
 		r.Put("/{id}", handler.Update)
 		r.Delete("/{id}", handler.Delete)
 		r.Post("/{id}/restore", handler.Restore)
+		r.Delete("/{id}/permanent", handler.PermanentDelete)
 	})
 
 	return r, svc
@@ -244,6 +245,35 @@ func TestHandler_Restore_NotFound(t *testing.T) {
 	router, _ := setupTestRouter("user-1")
 
 	req := httptest.NewRequest(http.MethodPost, "/api/notes/nonexistent/restore", nil)
+	w := httptest.NewRecorder()
+
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d", w.Code)
+	}
+}
+
+func TestHandler_PermanentDelete(t *testing.T) {
+	router, svc := setupTestRouter("user-1")
+
+	note, _ := svc.Create(context.Background(), "user-1", "Delete forever", nil)
+	svc.SoftDelete(context.Background(), note.ID, "user-1")
+
+	req := httptest.NewRequest(http.MethodDelete, "/api/notes/"+note.ID+"/permanent", nil)
+	w := httptest.NewRecorder()
+
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusNoContent {
+		t.Fatalf("expected 204, got %d: %s", w.Code, w.Body.String())
+	}
+}
+
+func TestHandler_PermanentDelete_NotFound(t *testing.T) {
+	router, _ := setupTestRouter("user-1")
+
+	req := httptest.NewRequest(http.MethodDelete, "/api/notes/nonexistent/permanent", nil)
 	w := httptest.NewRecorder()
 
 	router.ServeHTTP(w, req)

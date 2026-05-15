@@ -133,6 +133,7 @@ func main() {
 			r.Put("/{id}", noteHandler.Update)
 			r.Delete("/{id}", noteHandler.Delete)
 			r.Post("/{id}/restore", noteHandler.Restore)
+			r.Delete("/{id}/permanent", noteHandler.PermanentDelete)
 			r.Get("/{id}/export", exportHandler.Export)
 		})
 
