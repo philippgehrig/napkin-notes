@@ -187,6 +187,12 @@ function handlePermanentDelete(id: string) {
     gap: 1.2rem;
   }
 
+  .trash__actions {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
   .trash__restore-btn,
   .trash__delete-btn {
     padding: 0.3rem 0.6rem;

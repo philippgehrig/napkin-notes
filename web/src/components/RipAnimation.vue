@@ -84,7 +84,7 @@ const rightStyle = computed(() => ({
 <style scoped>
 .rip-animation {
   position: relative;
-  display: inline-block;
+  display: block;
   width: 100%;
   height: 100%;
 }
