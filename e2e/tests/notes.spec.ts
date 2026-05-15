@@ -34,7 +34,7 @@ test.describe('Notes CRUD', () => {
 
     // Go to gallery and open the note
     await page.goto('/gallery')
-    await page.click('.napkin-card__content')
+    await page.click('.napkin-card')
     await expect(page).toHaveURL(/\/napkin\//)
 
     // Edit the note

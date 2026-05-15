@@ -64,7 +64,7 @@ test.describe('Napkin texture consistency', () => {
     const galleryTexture = await getTextureSrc(page, '.napkin-card')
 
     // Open the note from gallery
-    await page.click('.napkin-card__content')
+    await page.click('.napkin-card')
     await expect(page).toHaveURL(/\/napkin\//)
 
     // Get editor texture

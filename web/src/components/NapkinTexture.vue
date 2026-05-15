@@ -31,6 +31,7 @@ const texture = computed(() => textures[(props.variant - 1) % textures.length])
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
 
 .napkin-texture__img {
