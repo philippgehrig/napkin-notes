@@ -42,3 +42,7 @@ docker-compose.override.yml
 coverage/
 *.lcov
 htmlcov/
+
+# Test results
+test-results/
+playwright-report/
