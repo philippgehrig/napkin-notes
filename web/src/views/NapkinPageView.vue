@@ -1,7 +1,7 @@
 <template>
   <div class="napkin-page">
     <div class="napkin-page__container" @click="focusEditor">
-      <NapkinTexture width="100%" height="100%" class="napkin-page__napkin">
+      <NapkinTexture width="100%" height="100%" :variant="napkinVariant" class="napkin-page__napkin">
         <textarea
           ref="textareaRef"
           v-model="content"
@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useNotesStore } from '../stores/notesStore'
 import NapkinTexture from '../components/NapkinTexture.vue'
@@ -35,6 +35,17 @@ const store = useNotesStore()
 const content = ref('')
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const currentNoteId = ref<string | null>(null)
+const defaultVariant = Math.floor(Math.random() * 3) + 1
+
+const napkinVariant = computed(() => {
+  if (!currentNoteId.value) return defaultVariant
+  let hash = 0
+  for (let i = 0; i < currentNoteId.value.length; i++) {
+    hash = ((hash << 5) - hash) + currentNoteId.value.charCodeAt(i)
+    hash |= 0
+  }
+  return (Math.abs(hash) % 3) + 1
+})
 
 onMounted(async () => {
   const id = route.params.id as string | undefined
