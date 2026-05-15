@@ -14,6 +14,8 @@ async function registerAndCreateNotes(page: Page, count: number): Promise<void> 
     const textarea = page.locator('.napkin-page__input')
     await textarea.fill(`Napkin note number ${i}`)
     await page.click('.napkin-page__new-btn')
+    // Wait for save to complete and input to be cleared
+    await expect(textarea).toHaveValue('')
   }
 }
 
