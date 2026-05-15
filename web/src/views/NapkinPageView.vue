@@ -158,16 +158,16 @@ async function newNapkin() {
   background-color: #3d2820;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 600px) and (orientation: portrait) {
   .napkin-page {
     padding: 1rem;
     height: calc(100vh - 50px);
     justify-content: flex-start;
-    padding-top: 2rem;
+    padding-top: 25vh;
   }
 
   .napkin-page__container {
-    max-width: 100%;
+    max-width: 95%;
   }
 
   .napkin-page__input {
@@ -184,6 +184,21 @@ async function newNapkin() {
   .napkin-page__new-btn {
     padding: 0.6rem 1.2rem;
     font-size: 1rem;
+  }
+}
+
+@media (max-width: 600px) and (orientation: landscape) {
+  .napkin-page {
+    padding: 1rem;
+  }
+
+  .napkin-page__container {
+    max-width: 100%;
+  }
+
+  .napkin-page__input {
+    font-size: 1.2rem;
+    padding: 0.75rem;
   }
 }
 </style>
