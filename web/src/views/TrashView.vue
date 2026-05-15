@@ -24,9 +24,14 @@
           </div>
           <div class="trash__tape" />
         </NapkinTexture>
-        <button class="trash__restore-btn" @click="handleRestore(note.id)">
-          Restore
-        </button>
+        <div class="trash__actions">
+          <button class="trash__restore-btn" @click="handleRestore(note.id)">
+            Restore
+          </button>
+          <button class="trash__delete-btn" @click="handlePermanentDelete(note.id)">
+            Delete Forever
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -52,6 +57,10 @@ function truncate(content: string): string {
 
 function handleRestore(id: string) {
   store.restoreNote(id)
+}
+
+function handlePermanentDelete(id: string) {
+  store.permanentlyDelete(id)
 }
 </script>
 
@@ -110,10 +119,15 @@ function handleRestore(id: string) {
   pointer-events: none;
 }
 
-.trash__restore-btn {
+.trash__actions {
   position: absolute;
   bottom: 8px;
   right: 8px;
+  display: flex;
+  gap: 0.4rem;
+}
+
+.trash__restore-btn {
   background-color: #5C3D2E;
   color: #FFF8E7;
   border: none;
@@ -127,6 +141,22 @@ function handleRestore(id: string) {
 
 .trash__restore-btn:hover {
   background-color: #3d2820;
+}
+
+.trash__delete-btn {
+  background-color: #8B2020;
+  color: #FFF8E7;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-family: var(--handwriting);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.trash__delete-btn:hover {
+  background-color: #5c1515;
 }
 
 .trash__loading,

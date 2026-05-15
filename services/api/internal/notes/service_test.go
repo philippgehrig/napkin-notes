@@ -118,6 +118,16 @@ func (m *mockNoteRepo) ListTrashed(ctx context.Context, userID string, limit, of
 	return result, nil
 }
 
+func (m *mockNoteRepo) PermanentDelete(ctx context.Context, id string) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if _, ok := m.notes[id]; !ok {
+		return ErrNoteNotFound
+	}
+	delete(m.notes, id)
+	return nil
+}
+
 func TestService_Create(t *testing.T) {
 	repo := newMockNoteRepo()
 	svc := NewService(repo)
@@ -245,6 +255,45 @@ func TestService_ListTrashedShowsDeleted(t *testing.T) {
 	}
 	if trashed[0].ID != note2.ID {
 		t.Errorf("expected trashed note ID=%s, got %s", note2.ID, trashed[0].ID)
+	}
+}
+
+func TestService_PermanentDelete(t *testing.T) {
+	repo := newMockNoteRepo()
+	svc := NewService(repo)
+
+	note, _ := svc.Create(context.Background(), "user-1", "Permanently delete me", nil)
+	_ = svc.SoftDelete(context.Background(), note.ID, "user-1")
+
+	err := svc.PermanentDelete(context.Background(), note.ID, "user-1")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Should not appear in trashed list
+	trashed, _ := svc.ListTrashed(context.Background(), "user-1", 0, 0)
+	for _, n := range trashed {
+		if n.ID == note.ID {
+			t.Error("permanently deleted note should not appear in trashed list")
+		}
+	}
+
+	// Should not be found by GetByID
+	_, err = svc.GetByID(context.Background(), note.ID, "user-1")
+	if err != ErrNoteNotFound {
+		t.Errorf("expected ErrNoteNotFound, got %v", err)
+	}
+}
+
+func TestService_PermanentDelete_WrongUser(t *testing.T) {
+	repo := newMockNoteRepo()
+	svc := NewService(repo)
+
+	note, _ := svc.Create(context.Background(), "user-1", "Protected note", nil)
+
+	err := svc.PermanentDelete(context.Background(), note.ID, "user-2")
+	if err != ErrNoteNotFound {
+		t.Errorf("expected ErrNoteNotFound, got %v", err)
 	}
 }
 

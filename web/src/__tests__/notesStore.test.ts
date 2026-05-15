@@ -122,6 +122,22 @@ describe('notesStore', () => {
     expect(store.notes).toContainEqual(restoredNote)
   })
 
+  it('permanently deletes a note', async () => {
+    const trashedNote = { ...mockNote, deleted_at: '2024-01-02T00:00:00Z' }
+
+    vi.mocked(api.get).mockResolvedValue({ data: [trashedNote] })
+    vi.mocked(api.delete).mockResolvedValue({})
+
+    const store = useNotesStore()
+    await store.fetchTrashed()
+    expect(store.trashedNotes).toHaveLength(1)
+
+    await store.permanentlyDelete('note-1')
+
+    expect(api.delete).toHaveBeenCalledWith('/notes/note-1/permanent')
+    expect(store.trashedNotes).toHaveLength(0)
+  })
+
   it('sets loading during fetchNotes', async () => {
     let resolvePromise: (value: unknown) => void
     const pending = new Promise((resolve) => { resolvePromise = resolve })

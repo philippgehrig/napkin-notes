@@ -33,12 +33,6 @@ const router = createRouter({
       component: () => import('../views/TrashView.vue'),
       meta: { requiresAuth: true },
     },
-    {
-      path: '/fonts',
-      name: 'fonts',
-      component: () => import('../views/FontsView.vue'),
-      meta: { requiresAuth: true },
-    },
   ],
 })
 

@@ -137,6 +137,24 @@ func (h *Handler) ListTrashed(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, notes)
 }
 
+// PermanentDelete handles DELETE /api/notes/{id}/permanent.
+func (h *Handler) PermanentDelete(w http.ResponseWriter, r *http.Request) {
+	userID := auth.GetUserID(r.Context())
+	noteID := chi.URLParam(r, "id")
+
+	err := h.svc.PermanentDelete(r.Context(), noteID, userID)
+	if err != nil {
+		if errors.Is(err, ErrNoteNotFound) {
+			writeJSON(w, http.StatusNotFound, map[string]string{"error": "note not found"})
+			return
+		}
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 // Restore handles POST /api/notes/{id}/restore.
 func (h *Handler) Restore(w http.ResponseWriter, r *http.Request) {
 	userID := auth.GetUserID(r.Context())

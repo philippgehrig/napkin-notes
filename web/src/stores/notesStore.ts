@@ -64,6 +64,11 @@ export const useNotesStore = defineStore('notes', () => {
     return data
   }
 
+  async function permanentlyDelete(id: string) {
+    await api.delete(`/notes/${id}/permanent`)
+    trashedNotes.value = trashedNotes.value.filter((n) => n.id !== id)
+  }
+
   return {
     notes,
     trashedNotes,
@@ -74,5 +79,6 @@ export const useNotesStore = defineStore('notes', () => {
     deleteNote,
     fetchTrashed,
     restoreNote,
+    permanentlyDelete,
   }
 })
