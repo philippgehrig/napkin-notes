@@ -50,6 +50,19 @@ export function useRipGesture(
     // Reset state
     progress.value = 0
     isRipping.value = false
+
+    // If a drag occurred, suppress the upcoming click event
+    if (didRip.value) {
+      const el = elementRef.value
+      if (el) {
+        const suppressClick = (e: Event) => {
+          e.stopPropagation()
+          e.preventDefault()
+          el.removeEventListener('click', suppressClick, true)
+        }
+        el.addEventListener('click', suppressClick, true)
+      }
+    }
   }
 
   // Attach/detach event listeners when the element ref changes

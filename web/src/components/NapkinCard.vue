@@ -33,14 +33,12 @@ const emit = defineEmits<{
 
 const cardRef = ref<HTMLElement | null>(null)
 
-const { isRipping, progress, didRip } = useRipGesture(cardRef, {
+const { isRipping, progress } = useRipGesture(cardRef, {
   onRip: () => emit('rip', props.note.id),
 })
 
 function handleClick() {
-  if (!didRip.value) {
-    emit('open', props.note.id)
-  }
+  emit('open', props.note.id)
 }
 
 const napkinVariant = computed(() => {
