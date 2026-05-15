@@ -66,9 +66,9 @@ function createNew() {
 }
 
 .gallery__title {
-  font-family: 'Caveat', cursive;
+  font-family: var(--handwriting);
   font-size: 2.5rem;
-  color: #2D2D2D;
+  color: #FFF8E7;
   margin: 0;
 }
 
@@ -78,7 +78,7 @@ function createNew() {
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  font-family: 'Caveat', cursive;
+  font-family: var(--handwriting);
   font-size: 1.2rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -98,8 +98,8 @@ function createNew() {
 .gallery__empty {
   text-align: center;
   padding: 4rem 2rem;
-  color: #5C3D2E;
-  font-family: 'Caveat', cursive;
+  color: #FFF8E7;
+  font-family: var(--handwriting);
   font-size: 1.4rem;
 }
 </style>

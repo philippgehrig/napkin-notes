@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'NapkinNotes';
+  src: url('/NapkinNotesFont.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -14,6 +22,7 @@
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
+  --handwriting: 'NapkinNotes', cursive;
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
@@ -52,6 +61,12 @@
 
 body {
   margin: 0;
+  background-image: url('/background.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  min-height: 100vh;
 }
 
 h1,

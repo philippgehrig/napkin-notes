@@ -12,6 +12,7 @@ export function useRipGesture(
   const threshold = options.threshold ?? 0.4
   const isRipping = ref(false)
   const progress = ref(0)
+  const didRip = ref(false)
 
   let startX = 0
   let tracking = false
@@ -24,6 +25,7 @@ export function useRipGesture(
     startX = e.clientX
     tracking = true
     isRipping.value = true
+    didRip.value = false
     ;(e.currentTarget as HTMLElement)?.setPointerCapture(e.pointerId)
   }
 
@@ -34,6 +36,9 @@ export function useRipGesture(
     const dx = Math.abs(e.clientX - startX)
     const width = el.offsetWidth
     progress.value = clamp(dx / width, 0, 1)
+    if (progress.value > 0.05) {
+      didRip.value = true
+    }
   }
 
   function onPointerUp() {
@@ -86,6 +91,7 @@ export function useRipGesture(
   return {
     isRipping,
     progress,
+    didRip,
     simulateDrag,
     simulateRelease,
   }

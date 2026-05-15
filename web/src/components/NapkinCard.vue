@@ -6,7 +6,7 @@
     @click="handleClick"
   >
     <RipAnimation :progress="progress" :is-active="isRipping">
-      <NapkinTexture width="100%" height="100%">
+      <NapkinTexture width="100%" height="100%" :variant="napkinVariant">
         <div class="napkin-card__content">
           {{ preview }}
         </div>
@@ -33,16 +33,24 @@ const emit = defineEmits<{
 
 const cardRef = ref<HTMLElement | null>(null)
 
-const { isRipping, progress } = useRipGesture(cardRef, {
+const { isRipping, progress, didRip } = useRipGesture(cardRef, {
   onRip: () => emit('rip', props.note.id),
 })
 
 function handleClick() {
-  // Only emit open if we're not currently in a rip gesture
-  if (!isRipping.value) {
+  if (!didRip.value) {
     emit('open', props.note.id)
   }
 }
+
+const napkinVariant = computed(() => {
+  let hash = 0
+  for (let i = 0; i < props.note.id.length; i++) {
+    hash = ((hash << 5) - hash) + props.note.id.charCodeAt(i)
+    hash |= 0
+  }
+  return (Math.abs(hash) % 3) + 1
+})
 
 const rotation = computed(() => {
   let hash = 0
@@ -79,7 +87,7 @@ const preview = computed(() => {
 
 .napkin-card__content {
   padding: 1.2rem;
-  font-family: 'Caveat', cursive;
+  font-family: var(--handwriting);
   font-size: 1.2rem;
   color: #2D2D2D;
   word-break: break-word;

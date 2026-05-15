@@ -67,9 +67,9 @@ function handleRestore(id: string) {
 }
 
 .trash__title {
-  font-family: 'Caveat', cursive;
+  font-family: var(--handwriting);
   font-size: 2.5rem;
-  color: #2D2D2D;
+  color: #FFF8E7;
   margin: 0;
 }
 
@@ -87,7 +87,7 @@ function handleRestore(id: string) {
 
 .trash__card-content {
   padding: 1.2rem;
-  font-family: 'Caveat', cursive;
+  font-family: var(--handwriting);
   font-size: 1.2rem;
   color: #2D2D2D;
   word-break: break-word;
@@ -119,7 +119,7 @@ function handleRestore(id: string) {
   border: none;
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
-  font-family: 'Caveat', cursive;
+  font-family: var(--handwriting);
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -133,8 +133,8 @@ function handleRestore(id: string) {
 .trash__empty {
   text-align: center;
   padding: 4rem 2rem;
-  color: #5C3D2E;
-  font-family: 'Caveat', cursive;
+  color: #FFF8E7;
+  font-family: var(--handwriting);
   font-size: 1.4rem;
 }
 </style>

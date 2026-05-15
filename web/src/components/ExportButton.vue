@@ -46,7 +46,7 @@ async function exportNote() {
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
-  font-family: 'Caveat', cursive;
+  font-family: var(--handwriting);
   font-size: 1.1rem;
   cursor: pointer;
   transition: background-color 0.2s ease;

@@ -98,7 +98,7 @@ async function save() {
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
-  font-family: 'Caveat', cursive;
+  font-family: var(--handwriting);
   font-size: 1.1rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -135,7 +135,7 @@ async function save() {
   outline: none;
   resize: none;
   background: transparent;
-  font-family: 'Caveat', cursive;
+  font-family: var(--handwriting);
   font-size: 1.4rem;
   color: #2D2D2D;
   padding: 1.5rem;

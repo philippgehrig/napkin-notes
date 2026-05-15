@@ -13,6 +13,9 @@ function handleLogout() {
 
 <template>
   <nav class="app-nav">
+    <router-link to="/" class="app-nav__logo">
+      <img src="/logo.png" alt="Napkin Notes" />
+    </router-link>
     <router-link to="/">Gallery</router-link>
     <router-link to="/trash">Trash</router-link>
     <router-link to="/fonts">Fonts</router-link>
@@ -28,6 +31,11 @@ function handleLogout() {
   padding: 0.75rem 1.5rem;
   background-color: #5C3D2E;
   color: #fff;
+}
+
+.app-nav__logo img {
+  height: 24px;
+  filter: brightness(10);
 }
 
 .app-nav a {
