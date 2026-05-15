@@ -38,11 +38,15 @@ func NewService(repo NoteRepository) *Service {
 }
 
 // Create creates a new note for the given user.
-func (s *Service) Create(ctx context.Context, userID, content string, fontID *string) (*models.Note, error) {
+func (s *Service) Create(ctx context.Context, userID, content string, fontID *string, textureVariant int) (*models.Note, error) {
+	if textureVariant < 1 || textureVariant > 3 {
+		textureVariant = 1
+	}
 	note := &models.Note{
-		UserID:  userID,
-		Content: content,
-		FontID:  fontID,
+		UserID:         userID,
+		Content:        content,
+		FontID:         fontID,
+		TextureVariant: textureVariant,
 	}
 	if err := s.repo.Create(ctx, note); err != nil {
 		return nil, err
@@ -69,7 +73,7 @@ func (s *Service) List(ctx context.Context, userID string, limit, offset int) ([
 }
 
 // Update updates a note's content and/or font, scoped to the given user.
-func (s *Service) Update(ctx context.Context, id, userID, content string, fontID *string) (*models.Note, error) {
+func (s *Service) Update(ctx context.Context, id, userID, content string, fontID *string, textureVariant int) (*models.Note, error) {
 	note, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -79,6 +83,9 @@ func (s *Service) Update(ctx context.Context, id, userID, content string, fontID
 	}
 	note.Content = content
 	note.FontID = fontID
+	if textureVariant >= 1 && textureVariant <= 3 {
+		note.TextureVariant = textureVariant
+	}
 	if err := s.repo.Update(ctx, note); err != nil {
 		return nil, err
 	}

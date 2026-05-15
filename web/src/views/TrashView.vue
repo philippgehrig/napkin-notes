@@ -18,7 +18,7 @@
         :key="note.id"
         class="trash__card"
       >
-        <NapkinTexture width="100%" height="100%">
+        <NapkinTexture width="100%" height="100%" :variant="note.texture_variant || 1">
           <div class="trash__card-content">
             {{ truncate(note.content) }}
           </div>
@@ -84,14 +84,19 @@ function handlePermanentDelete(id: string) {
 
 .trash__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
   gap: 2rem;
 }
 
 .trash__card {
   position: relative;
-  width: 220px;
-  height: 200px;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.04);
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .trash__card-content {

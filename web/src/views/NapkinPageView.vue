@@ -7,45 +7,33 @@
           v-model="content"
           class="napkin-page__input"
           placeholder="Write on your napkin..."
-          :maxlength="CHAR_LIMIT"
           @input="onInput"
         />
       </NapkinTexture>
     </div>
 
     <div class="napkin-page__footer">
-      <span class="napkin-page__char-count">{{ content.length }} / {{ CHAR_LIMIT }}</span>
+      <button class="napkin-page__save-btn" @click="saveCurrentNapkin">Save</button>
       <button class="napkin-page__new-btn" @click="newNapkin">New Napkin</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useNotesStore } from '../stores/notesStore'
 import NapkinTexture from '../components/NapkinTexture.vue'
-
-const CHAR_LIMIT = 500
 
 const route = useRoute()
 const router = useRouter()
 const store = useNotesStore()
 
 const content = ref('')
+const lastValidContent = ref('')
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const currentNoteId = ref<string | null>(null)
-const defaultVariant = Math.floor(Math.random() * 3) + 1
-
-const napkinVariant = computed(() => {
-  if (!currentNoteId.value) return defaultVariant
-  let hash = 0
-  for (let i = 0; i < currentNoteId.value.length; i++) {
-    hash = ((hash << 5) - hash) + currentNoteId.value.charCodeAt(i)
-    hash |= 0
-  }
-  return (Math.abs(hash) % 3) + 1
-})
+const napkinVariant = ref(Math.floor(Math.random() * 3) + 1)
 
 onMounted(async () => {
   const id = route.params.id as string | undefined
@@ -54,14 +42,17 @@ onMounted(async () => {
     const existing = store.notes.find((n) => n.id === id)
     if (existing) {
       content.value = existing.content
+      napkinVariant.value = existing.texture_variant || 1
     } else {
       await store.fetchNotes()
       const note = store.notes.find((n) => n.id === id)
       if (note) {
         content.value = note.content
+        napkinVariant.value = note.texture_variant || 1
       }
     }
   }
+  lastValidContent.value = content.value
   textareaRef.value?.focus()
 })
 
@@ -70,8 +61,12 @@ function focusEditor() {
 }
 
 function onInput() {
-  if (content.value.length > CHAR_LIMIT) {
-    content.value = content.value.slice(0, CHAR_LIMIT)
+  const el = textareaRef.value
+  if (!el) return
+  if (el.scrollHeight > el.clientHeight) {
+    content.value = lastValidContent.value
+  } else {
+    lastValidContent.value = content.value
   }
 }
 
@@ -79,9 +74,9 @@ async function saveCurrentNapkin() {
   if (!content.value.trim()) return
 
   if (currentNoteId.value) {
-    await store.updateNote(currentNoteId.value, content.value)
+    await store.updateNote(currentNoteId.value, content.value, napkinVariant.value)
   } else {
-    const note = await store.createNote(content.value)
+    const note = await store.createNote(content.value, napkinVariant.value)
     currentNoteId.value = note.id
   }
 }
@@ -90,6 +85,7 @@ async function newNapkin() {
   await saveCurrentNapkin()
   content.value = ''
   currentNoteId.value = null
+  napkinVariant.value = Math.floor(Math.random() * 3) + 1
   router.replace({ name: 'napkin' })
   textareaRef.value?.focus()
 }
@@ -109,14 +105,11 @@ async function newNapkin() {
 .napkin-page__container {
   width: 100%;
   max-width: 700px;
-  height: 80vh;
-  max-height: 700px;
   cursor: text;
 }
 
 .napkin-page__napkin {
-  height: 100%;
-  display: flex;
+  width: 100%;
 }
 
 .napkin-page__input {
@@ -129,9 +122,10 @@ async function newNapkin() {
   font-family: var(--handwriting);
   font-size: 1.5rem;
   color: #2D2D2D;
-  padding: 2rem;
+  padding: 1rem;
   box-sizing: border-box;
   line-height: 1.8;
+  overflow: hidden;
 }
 
 .napkin-page__input::placeholder {
@@ -145,12 +139,7 @@ async function newNapkin() {
   margin-top: 1.5rem;
 }
 
-.napkin-page__char-count {
-  font-family: var(--handwriting);
-  font-size: 1rem;
-  color: rgba(255, 248, 231, 0.6);
-}
-
+.napkin-page__save-btn,
 .napkin-page__new-btn {
   background-color: #5C3D2E;
   color: #FFF8E7;
@@ -163,6 +152,7 @@ async function newNapkin() {
   transition: background-color 0.2s ease;
 }
 
+.napkin-page__save-btn:hover,
 .napkin-page__new-btn:hover {
   background-color: #3d2820;
 }

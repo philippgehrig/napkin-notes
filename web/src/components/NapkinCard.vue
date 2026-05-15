@@ -42,12 +42,7 @@ function handleClick() {
 }
 
 const napkinVariant = computed(() => {
-  let hash = 0
-  for (let i = 0; i < props.note.id.length; i++) {
-    hash = ((hash << 5) - hash) + props.note.id.charCodeAt(i)
-    hash |= 0
-  }
-  return (Math.abs(hash) % 3) + 1
+  return props.note.texture_variant || 1
 })
 
 const rotation = computed(() => {
@@ -71,8 +66,8 @@ const preview = computed(() => {
 
 <style scoped>
 .napkin-card {
-  width: 220px;
-  height: 200px;
+  width: 100%;
+  aspect-ratio: 3 / 2;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   touch-action: none;

@@ -132,7 +132,7 @@ func TestService_Create(t *testing.T) {
 	repo := newMockNoteRepo()
 	svc := NewService(repo)
 
-	note, err := svc.Create(context.Background(), "user-1", "Hello world", nil)
+	note, err := svc.Create(context.Background(), "user-1", "Hello world", nil, 1)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -151,7 +151,7 @@ func TestService_GetByID(t *testing.T) {
 	repo := newMockNoteRepo()
 	svc := NewService(repo)
 
-	note, _ := svc.Create(context.Background(), "user-1", "Test note", nil)
+	note, _ := svc.Create(context.Background(), "user-1", "Test note", nil, 1)
 
 	got, err := svc.GetByID(context.Background(), note.ID, "user-1")
 	if err != nil {
@@ -166,7 +166,7 @@ func TestService_GetByID_WrongUser(t *testing.T) {
 	repo := newMockNoteRepo()
 	svc := NewService(repo)
 
-	note, _ := svc.Create(context.Background(), "user-1", "Secret note", nil)
+	note, _ := svc.Create(context.Background(), "user-1", "Secret note", nil, 1)
 
 	_, err := svc.GetByID(context.Background(), note.ID, "user-2")
 	if err != ErrNoteNotFound {
@@ -178,7 +178,7 @@ func TestService_SoftDelete(t *testing.T) {
 	repo := newMockNoteRepo()
 	svc := NewService(repo)
 
-	note, _ := svc.Create(context.Background(), "user-1", "Delete me", nil)
+	note, _ := svc.Create(context.Background(), "user-1", "Delete me", nil, 1)
 
 	err := svc.SoftDelete(context.Background(), note.ID, "user-1")
 	if err != nil {
@@ -198,7 +198,7 @@ func TestService_Restore(t *testing.T) {
 	repo := newMockNoteRepo()
 	svc := NewService(repo)
 
-	note, _ := svc.Create(context.Background(), "user-1", "Restore me", nil)
+	note, _ := svc.Create(context.Background(), "user-1", "Restore me", nil, 1)
 	_ = svc.SoftDelete(context.Background(), note.ID, "user-1")
 
 	_, err := svc.Restore(context.Background(), note.ID, "user-1")
@@ -223,9 +223,9 @@ func TestService_ListExcludesDeleted(t *testing.T) {
 	repo := newMockNoteRepo()
 	svc := NewService(repo)
 
-	svc.Create(context.Background(), "user-1", "Note 1", nil)
-	note2, _ := svc.Create(context.Background(), "user-1", "Note 2", nil)
-	svc.Create(context.Background(), "user-1", "Note 3", nil)
+	svc.Create(context.Background(), "user-1", "Note 1", nil, 1)
+	note2, _ := svc.Create(context.Background(), "user-1", "Note 2", nil, 1)
+	svc.Create(context.Background(), "user-1", "Note 3", nil, 1)
 
 	_ = svc.SoftDelete(context.Background(), note2.ID, "user-1")
 
@@ -244,8 +244,8 @@ func TestService_ListTrashedShowsDeleted(t *testing.T) {
 	repo := newMockNoteRepo()
 	svc := NewService(repo)
 
-	svc.Create(context.Background(), "user-1", "Note 1", nil)
-	note2, _ := svc.Create(context.Background(), "user-1", "Note 2", nil)
+	svc.Create(context.Background(), "user-1", "Note 1", nil, 1)
+	note2, _ := svc.Create(context.Background(), "user-1", "Note 2", nil, 1)
 
 	_ = svc.SoftDelete(context.Background(), note2.ID, "user-1")
 
@@ -262,7 +262,7 @@ func TestService_PermanentDelete(t *testing.T) {
 	repo := newMockNoteRepo()
 	svc := NewService(repo)
 
-	note, _ := svc.Create(context.Background(), "user-1", "Permanently delete me", nil)
+	note, _ := svc.Create(context.Background(), "user-1", "Permanently delete me", nil, 1)
 	_ = svc.SoftDelete(context.Background(), note.ID, "user-1")
 
 	err := svc.PermanentDelete(context.Background(), note.ID, "user-1")
@@ -289,7 +289,7 @@ func TestService_PermanentDelete_WrongUser(t *testing.T) {
 	repo := newMockNoteRepo()
 	svc := NewService(repo)
 
-	note, _ := svc.Create(context.Background(), "user-1", "Protected note", nil)
+	note, _ := svc.Create(context.Background(), "user-1", "Protected note", nil, 1)
 
 	err := svc.PermanentDelete(context.Background(), note.ID, "user-2")
 	if err != ErrNoteNotFound {

@@ -1,6 +1,9 @@
 <template>
-  <div class="napkin-texture" :style="{ width: width, height: height, backgroundImage: `url(${texture})` }">
-    <slot />
+  <div class="napkin-texture" :style="{ width: width, height: height }">
+    <img :src="texture" class="napkin-texture__img" />
+    <div class="napkin-texture__content">
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -24,7 +27,24 @@ const texture = computed(() => textures[(props.variant - 1) % textures.length])
 
 <style scoped>
 .napkin-texture {
-  background-size: cover;
-  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.napkin-texture__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.napkin-texture__content {
+  position: absolute;
+  top: 12%;
+  left: 25%;
+  width: 50%;
+  height: 76%;
 }
 </style>

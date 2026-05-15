@@ -7,6 +7,7 @@ export interface Note {
   user_id: string
   content: string
   font_id?: string
+  texture_variant: number
   deleted_at?: string
   created_at: string
   updated_at: string
@@ -27,14 +28,16 @@ export const useNotesStore = defineStore('notes', () => {
     }
   }
 
-  async function createNote(content: string, fontId?: string) {
-    const { data } = await api.post('/notes', { content, font_id: fontId })
+  async function createNote(content: string, textureVariant?: number) {
+    const { data } = await api.post('/notes', { content, texture_variant: textureVariant || 1 })
     notes.value.push(data)
     return data
   }
 
-  async function updateNote(id: string, content: string, fontId?: string) {
-    const { data } = await api.put(`/notes/${id}`, { content, font_id: fontId })
+  async function updateNote(id: string, content: string, textureVariant?: number) {
+    const payload: Record<string, unknown> = { content }
+    if (textureVariant) payload.texture_variant = textureVariant
+    const { data } = await api.put(`/notes/${id}`, payload)
     const index = notes.value.findIndex((n) => n.id === id)
     if (index !== -1) {
       notes.value[index] = data

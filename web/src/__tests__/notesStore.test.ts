@@ -51,18 +51,18 @@ describe('notesStore', () => {
     const store = useNotesStore()
     const result = await store.createNote('Hello world')
 
-    expect(api.post).toHaveBeenCalledWith('/notes', { content: 'Hello world', font_id: undefined })
+    expect(api.post).toHaveBeenCalledWith('/notes', { content: 'Hello world', texture_variant: 1 })
     expect(store.notes).toContainEqual(mockNote)
     expect(result).toEqual(mockNote)
   })
 
-  it('creates a note with fontId', async () => {
-    vi.mocked(api.post).mockResolvedValue({ data: { ...mockNote, font_id: 'font-1' } })
+  it('creates a note with texture variant', async () => {
+    vi.mocked(api.post).mockResolvedValue({ data: { ...mockNote, texture_variant: 2 } })
 
     const store = useNotesStore()
-    await store.createNote('Hello world', 'font-1')
+    await store.createNote('Hello world', 2)
 
-    expect(api.post).toHaveBeenCalledWith('/notes', { content: 'Hello world', font_id: 'font-1' })
+    expect(api.post).toHaveBeenCalledWith('/notes', { content: 'Hello world', texture_variant: 2 })
   })
 
   it('updates a note', async () => {
