@@ -209,11 +209,12 @@ async function discardNapkin() {
     padding: 1rem;
     height: calc(100vh - 50px);
     justify-content: flex-start;
-    padding-top: 25vh;
+    padding-top: 15vh;
   }
 
   .napkin-page__container {
-    max-width: 95%;
+    max-width: 100%;
+    width: 100%;
   }
 
   .napkin-page__input {
