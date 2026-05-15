@@ -126,6 +126,7 @@ async function newNapkin() {
   box-sizing: border-box;
   line-height: 1.8;
   overflow: hidden;
+  pointer-events: auto;
 }
 
 .napkin-page__input::placeholder {

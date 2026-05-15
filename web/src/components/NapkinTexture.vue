@@ -38,6 +38,7 @@ const texture = computed(() => textures[(props.variant - 1) % textures.length])
   height: 100%;
   object-fit: contain;
   display: block;
+  pointer-events: none;
 }
 
 .napkin-texture__content {
@@ -46,5 +47,6 @@ const texture = computed(() => textures[(props.variant - 1) % textures.length])
   left: 25%;
   width: 50%;
   height: 76%;
+  pointer-events: none;
 }
 </style>
