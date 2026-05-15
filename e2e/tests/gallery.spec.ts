@@ -11,12 +11,9 @@ async function registerAndCreateNotes(page: Page, count: number): Promise<void> 
   await expect(page).toHaveURL('/')
 
   for (let i = 1; i <= count; i++) {
-    await page.click('.gallery__new-btn')
-    await expect(page).toHaveURL(/\/note/)
-    const textarea = page.locator('.editor__textarea')
+    const textarea = page.locator('.napkin-page__input')
     await textarea.fill(`Napkin note number ${i}`)
-    await page.click('.editor__save-btn')
-    await expect(page).toHaveURL('/')
+    await page.click('.napkin-page__new-btn')
   }
 }
 
@@ -26,6 +23,7 @@ test.describe('Gallery', () => {
   })
 
   test('displays multiple napkin cards', async ({ page }) => {
+    await page.goto('/gallery')
     const cards = page.locator('.napkin-card')
     await expect(cards).toHaveCount(3)
   })
@@ -36,6 +34,7 @@ test.describe('Gallery', () => {
   })
 
   test('rip-to-delete moves note to trash', async ({ page }) => {
+    await page.goto('/gallery')
     const firstCard = page.locator('.napkin-card').first()
     const box = await firstCard.boundingBox()
     expect(box).not.toBeNull()
@@ -55,6 +54,7 @@ test.describe('Gallery', () => {
   })
 
   test('restore from trash moves note back', async ({ page }) => {
+    await page.goto('/gallery')
     const firstCard = page.locator('.napkin-card').first()
     const box = await firstCard.boundingBox()
     expect(box).not.toBeNull()
@@ -80,7 +80,7 @@ test.describe('Gallery', () => {
     await expect(page.locator('.trash__card')).toHaveCount(0)
 
     // Go back to gallery and verify restored
-    await page.goto('/')
+    await page.goto('/gallery')
     await expect(page.locator('.napkin-card')).toHaveCount(3)
   })
 })

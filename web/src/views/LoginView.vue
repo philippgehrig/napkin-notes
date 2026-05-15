@@ -14,7 +14,7 @@ async function handleSubmit() {
   error.value = ''
   try {
     await auth.login(email.value, password.value)
-    router.push({ name: 'gallery' })
+    router.push({ name: 'napkin' })
   } catch (e: any) {
     error.value = e.response?.data?.message || 'Login failed'
   }

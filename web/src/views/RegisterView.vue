@@ -15,7 +15,7 @@ async function handleSubmit() {
   error.value = ''
   try {
     await auth.register(email.value, password.value, displayName.value)
-    router.push({ name: 'gallery' })
+    router.push({ name: 'napkin' })
   } catch (e: any) {
     error.value = e.response?.data?.message || 'Registration failed'
   }

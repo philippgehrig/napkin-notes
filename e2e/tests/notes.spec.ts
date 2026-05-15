@@ -17,41 +17,39 @@ test.describe('Notes CRUD', () => {
   })
 
   test('creates a new napkin note', async ({ page }) => {
-    await page.click('.gallery__new-btn')
-    await expect(page).toHaveURL(/\/note/)
-
-    const textarea = page.locator('.editor__textarea')
+    const textarea = page.locator('.napkin-page__input')
     await textarea.fill('My first napkin note')
-    await page.click('.editor__save-btn')
+    await page.click('.napkin-page__new-btn')
 
-    await expect(page).toHaveURL('/')
+    // Navigate to gallery to verify note was saved
+    await page.goto('/gallery')
     await expect(page.locator('.napkin-card__content')).toContainText('My first napkin note')
   })
 
-  test('edits an existing note', async ({ page }) => {
+  test('edits an existing note from gallery', async ({ page }) => {
     // Create a note first
-    await page.click('.gallery__new-btn')
-    const textarea = page.locator('.editor__textarea')
+    const textarea = page.locator('.napkin-page__input')
     await textarea.fill('Original content')
-    await page.click('.editor__save-btn')
-    await expect(page).toHaveURL('/')
+    await page.click('.napkin-page__new-btn')
 
-    // Open the note for editing
+    // Go to gallery and open the note
+    await page.goto('/gallery')
     await page.click('.napkin-card__content')
-    await expect(page).toHaveURL(/\/note\//)
+    await expect(page).toHaveURL(/\/napkin\//)
 
-    // Clear and type new content
-    const editorTextarea = page.locator('.editor__textarea')
-    await editorTextarea.clear()
-    await editorTextarea.fill('Updated content')
-    await page.click('.editor__save-btn')
+    // Edit the note
+    const napkinInput = page.locator('.napkin-page__input')
+    await napkinInput.clear()
+    await napkinInput.fill('Updated content')
+    await page.click('.napkin-page__new-btn')
 
-    await expect(page).toHaveURL('/')
+    // Verify in gallery
+    await page.goto('/gallery')
     await expect(page.locator('.napkin-card__content')).toContainText('Updated content')
   })
 
-  test('empty state shows no napkins message', async ({ page }) => {
-    await expect(page.locator('.gallery__empty')).toBeVisible()
-    await expect(page.locator('.gallery__empty')).toContainText('No napkins yet')
+  test('empty state shows napkin page with placeholder', async ({ page }) => {
+    await expect(page.locator('.napkin-page__input')).toBeVisible()
+    await expect(page.locator('.napkin-page__input')).toHaveAttribute('placeholder', 'Write on your napkin...')
   })
 })
