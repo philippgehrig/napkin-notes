@@ -82,4 +82,26 @@ function handleLogout() {
 .app-nav__links button:hover {
   opacity: 0.6;
 }
+
+@media (max-width: 600px) {
+  .app-nav {
+    padding: 0.75rem 1rem;
+  }
+
+  .app-nav__brand {
+    font-size: 1.3rem;
+  }
+
+  .app-nav__links {
+    gap: 0.8rem;
+  }
+
+  .app-nav__links a {
+    font-size: 1rem;
+  }
+
+  .app-nav__links button {
+    font-size: 0.9rem;
+  }
+}
 </style>

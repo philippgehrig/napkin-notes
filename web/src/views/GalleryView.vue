@@ -102,4 +102,24 @@ function createNew() {
   font-family: var(--handwriting);
   font-size: 1.4rem;
 }
+
+@media (max-width: 600px) {
+  .gallery {
+    padding: 1rem;
+  }
+
+  .gallery__title {
+    font-size: 1.8rem;
+  }
+
+  .gallery__new-btn {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+
+  .gallery__grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+}
 </style>

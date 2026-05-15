@@ -157,4 +157,33 @@ async function newNapkin() {
 .napkin-page__new-btn:hover {
   background-color: #3d2820;
 }
+
+@media (max-width: 600px) {
+  .napkin-page {
+    padding: 1rem;
+    height: calc(100vh - 50px);
+    justify-content: flex-start;
+    padding-top: 2rem;
+  }
+
+  .napkin-page__container {
+    max-width: 100%;
+  }
+
+  .napkin-page__input {
+    font-size: 1.2rem;
+    padding: 0.75rem;
+  }
+
+  .napkin-page__footer {
+    margin-top: 1rem;
+    gap: 1rem;
+  }
+
+  .napkin-page__save-btn,
+  .napkin-page__new-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+  }
+}
 </style>

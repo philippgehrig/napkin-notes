@@ -172,4 +172,25 @@ function handlePermanentDelete(id: string) {
   font-family: var(--handwriting);
   font-size: 1.4rem;
 }
+
+@media (max-width: 600px) {
+  .trash {
+    padding: 1rem;
+  }
+
+  .trash__title {
+    font-size: 1.8rem;
+  }
+
+  .trash__grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  .trash__restore-btn,
+  .trash__delete-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.9rem;
+  }
+}
 </style>
