@@ -15,7 +15,12 @@ export function useRipGesture(
   const didRip = ref(false)
 
   let startX = 0
+  let startY = 0
   let tracking = false
+  let locked = false
+  let pointerId = -1
+
+  const LOCK_DISTANCE = 10
 
   function clamp(value: number, min: number, max: number) {
     return Math.min(Math.max(value, min), max)
@@ -23,17 +28,33 @@ export function useRipGesture(
 
   function onPointerDown(e: PointerEvent) {
     startX = e.clientX
+    startY = e.clientY
     tracking = true
-    isRipping.value = true
+    locked = false
     didRip.value = false
-    ;(e.currentTarget as HTMLElement)?.setPointerCapture(e.pointerId)
+    pointerId = e.pointerId
   }
 
   function onPointerMove(e: PointerEvent) {
     if (!tracking) return
     const el = elementRef.value
     if (!el) return
+
     const dx = Math.abs(e.clientX - startX)
+    const dy = Math.abs(e.clientY - startY)
+
+    if (!locked) {
+      if (dx < LOCK_DISTANCE && dy < LOCK_DISTANCE) return
+      if (dx > dy) {
+        locked = true
+        isRipping.value = true
+        el.setPointerCapture(pointerId)
+      } else {
+        tracking = false
+        return
+      }
+    }
+
     const width = el.offsetWidth
     progress.value = clamp(dx / width, 0, 1)
     if (progress.value > 0.05) {
@@ -42,16 +63,15 @@ export function useRipGesture(
   }
 
   function onPointerUp() {
-    if (!tracking) return
+    if (!tracking && !locked) return
     tracking = false
-    if (progress.value >= threshold) {
+    if (locked && progress.value >= threshold) {
       options.onRip()
     }
-    // Reset state
     progress.value = 0
     isRipping.value = false
+    locked = false
 
-    // If a drag occurred, suppress the upcoming click event
     if (didRip.value) {
       const el = elementRef.value
       if (el) {
