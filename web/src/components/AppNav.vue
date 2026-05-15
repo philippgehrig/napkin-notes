@@ -15,7 +15,8 @@ function handleLogout() {
   <nav class="app-nav">
     <router-link to="/" class="app-nav__brand">Napkin Notes</router-link>
     <div class="app-nav__links">
-      <router-link to="/">Gallery</router-link>
+      <router-link to="/">Napkin</router-link>
+      <router-link to="/gallery">Gallery</router-link>
       <router-link to="/trash">Trash</router-link>
       <button @click="handleLogout">Logout</button>
     </div>

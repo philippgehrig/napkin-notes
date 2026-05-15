@@ -17,6 +17,18 @@ const router = createRouter({
     },
     {
       path: '/',
+      name: 'napkin',
+      component: () => import('../views/NapkinPageView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/napkin/:id',
+      name: 'napkin-edit',
+      component: () => import('../views/NapkinPageView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/gallery',
       name: 'gallery',
       component: () => import('../views/GalleryView.vue'),
       meta: { requiresAuth: true },
@@ -24,8 +36,10 @@ const router = createRouter({
     {
       path: '/note/:id?',
       name: 'editor',
-      component: () => import('../views/NoteEditorView.vue'),
-      meta: { requiresAuth: true },
+      redirect: (to) => {
+        const id = to.params.id
+        return id ? `/napkin/${id}` : '/'
+      },
     },
     {
       path: '/trash',
@@ -44,7 +58,7 @@ router.beforeEach((to) => {
   }
 
   if (to.meta.guest && token) {
-    return { name: 'gallery' }
+    return { name: 'napkin' }
   }
 })
 
