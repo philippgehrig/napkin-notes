@@ -13,8 +13,10 @@ async function registerAndCreateNotes(page: Page, count: number): Promise<void> 
   for (let i = 1; i <= count; i++) {
     const textarea = page.locator('.napkin-page__input')
     await textarea.fill(`Napkin note number ${i}`)
+    // Wait for auto-save to persist the note
+    await expect(page).toHaveURL(/\/napkin\//, { timeout: 5000 })
+    // Now click New Napkin to start a fresh one
     await page.click('.napkin-page__new-btn')
-    // Wait for save to complete and input to be cleared
     await expect(textarea).toHaveValue('')
   }
 }
@@ -41,17 +43,15 @@ test.describe('Gallery', () => {
     const box = await firstCard.boundingBox()
     expect(box).not.toBeNull()
 
-    // Simulate horizontal drag (pointer events) exceeding the 40% threshold
     const startX = box!.x + box!.width * 0.2
     const startY = box!.y + box!.height / 2
-    const endX = box!.x + box!.width * 0.8 // drag 60% of width
+    const endX = box!.x + box!.width * 0.8
 
     await page.mouse.move(startX, startY)
     await page.mouse.down()
     await page.mouse.move(endX, startY, { steps: 10 })
     await page.mouse.up()
 
-    // Should now have 2 cards
     await expect(page.locator('.napkin-card')).toHaveCount(2)
   })
 
@@ -61,7 +61,6 @@ test.describe('Gallery', () => {
     const box = await firstCard.boundingBox()
     expect(box).not.toBeNull()
 
-    // Rip the first card
     const startX = box!.x + box!.width * 0.2
     const startY = box!.y + box!.height / 2
     const endX = box!.x + box!.width * 0.8
@@ -73,15 +72,12 @@ test.describe('Gallery', () => {
 
     await expect(page.locator('.napkin-card')).toHaveCount(2)
 
-    // Navigate to trash
     await page.goto('/trash')
     await expect(page.locator('.trash__card')).toHaveCount(1)
 
-    // Click restore button
     await page.click('.trash__restore-btn')
     await expect(page.locator('.trash__card')).toHaveCount(0)
 
-    // Go back to gallery and verify restored
     await page.goto('/gallery')
     await expect(page.locator('.napkin-card')).toHaveCount(3)
   })

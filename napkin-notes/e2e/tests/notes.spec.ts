@@ -11,6 +11,10 @@ async function registerFreshUser(page: Page): Promise<void> {
   await expect(page).toHaveURL('/')
 }
 
+async function waitForAutoSave(page: Page): Promise<void> {
+  await expect(page).toHaveURL(/\/napkin\//, { timeout: 5000 })
+}
+
 test.describe('Notes CRUD', () => {
   test.beforeEach(async ({ page }) => {
     await registerFreshUser(page)
@@ -19,31 +23,26 @@ test.describe('Notes CRUD', () => {
   test('creates a new napkin note', async ({ page }) => {
     const textarea = page.locator('.napkin-page__input')
     await textarea.fill('My first napkin note')
-    await page.click('.napkin-page__new-btn')
+    await waitForAutoSave(page)
 
-    // Navigate to gallery to verify note was saved
     await page.goto('/gallery')
     await expect(page.locator('.napkin-card__content')).toContainText('My first napkin note')
   })
 
   test('edits an existing note from gallery', async ({ page }) => {
-    // Create a note first
     const textarea = page.locator('.napkin-page__input')
     await textarea.fill('Original content')
-    await page.click('.napkin-page__new-btn')
+    await waitForAutoSave(page)
 
-    // Go to gallery and open the note
     await page.goto('/gallery')
     await page.click('.napkin-card')
     await expect(page).toHaveURL(/\/napkin\//)
 
-    // Edit the note
     const napkinInput = page.locator('.napkin-page__input')
     await napkinInput.clear()
     await napkinInput.fill('Updated content')
-    await page.click('.napkin-page__new-btn')
+    await page.waitForTimeout(1500)
 
-    // Verify in gallery
     await page.goto('/gallery')
     await expect(page.locator('.napkin-card__content')).toContainText('Updated content')
   })

@@ -4,7 +4,7 @@ test.describe('Authentication', () => {
   test('unauthenticated users see login page', async ({ page }) => {
     await page.goto('/')
     await expect(page).toHaveURL(/\/login/)
-    await expect(page.locator('h1')).toHaveText('Login')
+    await expect(page.locator('h1')).toHaveText('Welcome Back')
   })
 
   test('register a new user redirects to napkin page', async ({ page }) => {
@@ -50,6 +50,6 @@ test.describe('Authentication', () => {
     await page.fill('#password', 'wrongpassword')
     await page.click('button[type="submit"]')
 
-    await expect(page.locator('.error')).toBeVisible()
+    await expect(page.locator('.auth__error')).toBeVisible()
   })
 })
