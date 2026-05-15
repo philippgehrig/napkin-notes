@@ -13,14 +13,14 @@
     </div>
 
     <div class="napkin-page__footer">
-      <button class="napkin-page__save-btn" @click="saveCurrentNapkin">Save</button>
       <button class="napkin-page__new-btn" @click="newNapkin">New Napkin</button>
+      <button class="napkin-page__discard-btn" @click="discardNapkin">Discard</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useNotesStore } from '../stores/notesStore'
 import NapkinTexture from '../components/NapkinTexture.vue'
@@ -34,6 +34,8 @@ const lastValidContent = ref('')
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const currentNoteId = ref<string | null>(null)
 const napkinVariant = ref(Math.floor(Math.random() * 3) + 1)
+
+let autoSaveTimer: ReturnType<typeof setTimeout> | null = null
 
 onMounted(async () => {
   const id = route.params.id as string | undefined
@@ -56,6 +58,33 @@ onMounted(async () => {
   textareaRef.value?.focus()
 })
 
+onUnmounted(() => {
+  if (autoSaveTimer) clearTimeout(autoSaveTimer)
+})
+
+watch(content, () => {
+  scheduleAutoSave()
+})
+
+function scheduleAutoSave() {
+  if (autoSaveTimer) clearTimeout(autoSaveTimer)
+  autoSaveTimer = setTimeout(() => {
+    autoSave()
+  }, 1000)
+}
+
+async function autoSave() {
+  if (!content.value.trim()) return
+
+  if (currentNoteId.value) {
+    await store.updateNote(currentNoteId.value, content.value, napkinVariant.value)
+  } else {
+    const note = await store.createNote(content.value, napkinVariant.value)
+    currentNoteId.value = note.id
+    router.replace({ name: 'napkin-edit', params: { id: note.id } })
+  }
+}
+
 function focusEditor() {
   textareaRef.value?.focus()
 }
@@ -70,20 +99,23 @@ function onInput() {
   }
 }
 
-async function saveCurrentNapkin() {
-  if (!content.value.trim()) return
-
-  if (currentNoteId.value) {
-    await store.updateNote(currentNoteId.value, content.value, napkinVariant.value)
-  } else {
-    const note = await store.createNote(content.value, napkinVariant.value)
-    currentNoteId.value = note.id
-  }
+function newNapkin() {
+  if (autoSaveTimer) clearTimeout(autoSaveTimer)
+  content.value = ''
+  lastValidContent.value = ''
+  currentNoteId.value = null
+  napkinVariant.value = Math.floor(Math.random() * 3) + 1
+  router.replace({ name: 'napkin' })
+  textareaRef.value?.focus()
 }
 
-async function newNapkin() {
-  await saveCurrentNapkin()
+async function discardNapkin() {
+  if (autoSaveTimer) clearTimeout(autoSaveTimer)
+  if (currentNoteId.value) {
+    await store.deleteNote(currentNoteId.value)
+  }
   content.value = ''
+  lastValidContent.value = ''
   currentNoteId.value = null
   napkinVariant.value = Math.floor(Math.random() * 3) + 1
   router.replace({ name: 'napkin' })
@@ -140,7 +172,6 @@ async function newNapkin() {
   margin-top: 1.5rem;
 }
 
-.napkin-page__save-btn,
 .napkin-page__new-btn {
   background-color: #5C3D2E;
   color: #FFF8E7;
@@ -153,9 +184,24 @@ async function newNapkin() {
   transition: background-color 0.2s ease;
 }
 
-.napkin-page__save-btn:hover,
 .napkin-page__new-btn:hover {
   background-color: #3d2820;
+}
+
+.napkin-page__discard-btn {
+  background-color: #8B2020;
+  color: #FFF8E7;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-family: var(--handwriting);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.napkin-page__discard-btn:hover {
+  background-color: #5c1515;
 }
 
 @media (max-width: 600px) and (orientation: portrait) {
@@ -180,8 +226,8 @@ async function newNapkin() {
     gap: 1rem;
   }
 
-  .napkin-page__save-btn,
-  .napkin-page__new-btn {
+  .napkin-page__new-btn,
+  .napkin-page__discard-btn {
     padding: 0.6rem 1.2rem;
     font-size: 1rem;
   }
