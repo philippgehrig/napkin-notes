@@ -73,6 +73,7 @@ function handlePermanentDelete(id: string) {
 
 .trash__header {
   margin-bottom: 2rem;
+  text-align: left;
 }
 
 .trash__title {
