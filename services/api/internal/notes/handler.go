@@ -21,13 +21,15 @@ func NewHandler(svc *Service) *Handler {
 }
 
 type createRequest struct {
-	Content string  `json:"content"`
-	FontID  *string `json:"font_id,omitempty"`
+	Content        string  `json:"content"`
+	FontID         *string `json:"font_id,omitempty"`
+	TextureVariant int     `json:"texture_variant"`
 }
 
 type updateRequest struct {
-	Content string  `json:"content"`
-	FontID  *string `json:"font_id,omitempty"`
+	Content        string  `json:"content"`
+	FontID         *string `json:"font_id,omitempty"`
+	TextureVariant int     `json:"texture_variant"`
 }
 
 // Create handles POST /api/notes.
@@ -40,7 +42,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	note, err := h.svc.Create(r.Context(), userID, req.Content, req.FontID)
+	note, err := h.svc.Create(r.Context(), userID, req.Content, req.FontID, req.TextureVariant)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 		return
@@ -92,7 +94,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	note, err := h.svc.Update(r.Context(), noteID, userID, req.Content, req.FontID)
+	note, err := h.svc.Update(r.Context(), noteID, userID, req.Content, req.FontID, req.TextureVariant)
 	if err != nil {
 		if errors.Is(err, ErrNoteNotFound) {
 			writeJSON(w, http.StatusNotFound, map[string]string{"error": "note not found"})

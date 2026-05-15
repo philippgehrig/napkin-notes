@@ -28,11 +28,11 @@ func (r *PostgresNoteRepo) Create(ctx context.Context, note *models.Note) error 
 	note.UpdatedAt = now
 
 	query := `
-		INSERT INTO notes (id, user_id, content, font_id, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6)`
+		INSERT INTO notes (id, user_id, content, font_id, texture_variant, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)`
 
 	_, err := r.db.ExecContext(ctx, query,
-		note.ID, note.UserID, note.Content, note.FontID, note.CreatedAt, note.UpdatedAt,
+		note.ID, note.UserID, note.Content, note.FontID, note.TextureVariant, note.CreatedAt, note.UpdatedAt,
 	)
 	return err
 }
@@ -40,13 +40,13 @@ func (r *PostgresNoteRepo) Create(ctx context.Context, note *models.Note) error 
 // GetByID retrieves a note by its ID.
 func (r *PostgresNoteRepo) GetByID(ctx context.Context, id string) (*models.Note, error) {
 	query := `
-		SELECT id, user_id, content, font_id, deleted_at, created_at, updated_at
+		SELECT id, user_id, content, font_id, texture_variant, deleted_at, created_at, updated_at
 		FROM notes WHERE id = $1`
 
 	note := &models.Note{}
 	err := r.db.QueryRowContext(ctx, query, id).Scan(
 		&note.ID, &note.UserID, &note.Content, &note.FontID,
-		&note.DeletedAt, &note.CreatedAt, &note.UpdatedAt,
+		&note.TextureVariant, &note.DeletedAt, &note.CreatedAt, &note.UpdatedAt,
 	)
 	if err == sql.ErrNoRows {
 		return nil, notes.ErrNoteNotFound
@@ -60,7 +60,7 @@ func (r *PostgresNoteRepo) GetByID(ctx context.Context, id string) (*models.Note
 // List returns active (non-deleted) notes for a user with pagination.
 func (r *PostgresNoteRepo) List(ctx context.Context, userID string, limit, offset int) ([]*models.Note, error) {
 	query := `
-		SELECT id, user_id, content, font_id, deleted_at, created_at, updated_at
+		SELECT id, user_id, content, font_id, texture_variant, deleted_at, created_at, updated_at
 		FROM notes
 		WHERE user_id = $1 AND deleted_at IS NULL
 		ORDER BY created_at DESC
@@ -80,11 +80,11 @@ func (r *PostgresNoteRepo) Update(ctx context.Context, note *models.Note) error 
 	note.UpdatedAt = time.Now()
 
 	query := `
-		UPDATE notes SET content = $1, font_id = $2, updated_at = $3
-		WHERE id = $4`
+		UPDATE notes SET content = $1, font_id = $2, texture_variant = $3, updated_at = $4
+		WHERE id = $5`
 
 	result, err := r.db.ExecContext(ctx, query,
-		note.Content, note.FontID, note.UpdatedAt, note.ID,
+		note.Content, note.FontID, note.TextureVariant, note.UpdatedAt, note.ID,
 	)
 	if err != nil {
 		return err
@@ -160,7 +160,7 @@ func (r *PostgresNoteRepo) PermanentDelete(ctx context.Context, id string) error
 // ListTrashed returns soft-deleted notes for a user with pagination.
 func (r *PostgresNoteRepo) ListTrashed(ctx context.Context, userID string, limit, offset int) ([]*models.Note, error) {
 	query := `
-		SELECT id, user_id, content, font_id, deleted_at, created_at, updated_at
+		SELECT id, user_id, content, font_id, texture_variant, deleted_at, created_at, updated_at
 		FROM notes
 		WHERE user_id = $1 AND deleted_at IS NOT NULL
 		ORDER BY deleted_at DESC
@@ -182,7 +182,7 @@ func scanNotes(rows *sql.Rows) ([]*models.Note, error) {
 		note := &models.Note{}
 		err := rows.Scan(
 			&note.ID, &note.UserID, &note.Content, &note.FontID,
-			&note.DeletedAt, &note.CreatedAt, &note.UpdatedAt,
+			&note.TextureVariant, &note.DeletedAt, &note.CreatedAt, &note.UpdatedAt,
 		)
 		if err != nil {
 			return nil, err

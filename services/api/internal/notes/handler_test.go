@@ -78,7 +78,7 @@ func TestHandler_GetByID(t *testing.T) {
 	router, svc := setupTestRouter("user-1")
 
 	// Create a note first
-	note, _ := svc.Create(context.Background(), "user-1", "Get me", nil)
+	note, _ := svc.Create(context.Background(), "user-1", "Get me", nil, 1)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/notes/"+note.ID, nil)
 	w := httptest.NewRecorder()
@@ -112,8 +112,8 @@ func TestHandler_GetByID_NotFound(t *testing.T) {
 func TestHandler_List(t *testing.T) {
 	router, svc := setupTestRouter("user-1")
 
-	svc.Create(context.Background(), "user-1", "Note 1", nil)
-	svc.Create(context.Background(), "user-1", "Note 2", nil)
+	svc.Create(context.Background(), "user-1", "Note 1", nil, 1)
+	svc.Create(context.Background(), "user-1", "Note 2", nil, 1)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/notes?limit=10&offset=0", nil)
 	w := httptest.NewRecorder()
@@ -134,7 +134,7 @@ func TestHandler_List(t *testing.T) {
 func TestHandler_Update(t *testing.T) {
 	router, svc := setupTestRouter("user-1")
 
-	note, _ := svc.Create(context.Background(), "user-1", "Original", nil)
+	note, _ := svc.Create(context.Background(), "user-1", "Original", nil, 1)
 
 	body := `{"content":"Updated"}`
 	req := httptest.NewRequest(http.MethodPut, "/api/notes/"+note.ID, bytes.NewBufferString(body))
@@ -172,7 +172,7 @@ func TestHandler_Update_NotFound(t *testing.T) {
 func TestHandler_Delete(t *testing.T) {
 	router, svc := setupTestRouter("user-1")
 
-	note, _ := svc.Create(context.Background(), "user-1", "Delete me", nil)
+	note, _ := svc.Create(context.Background(), "user-1", "Delete me", nil, 1)
 
 	req := httptest.NewRequest(http.MethodDelete, "/api/notes/"+note.ID, nil)
 	w := httptest.NewRecorder()
@@ -200,7 +200,7 @@ func TestHandler_Delete_NotFound(t *testing.T) {
 func TestHandler_ListTrashed(t *testing.T) {
 	router, svc := setupTestRouter("user-1")
 
-	note, _ := svc.Create(context.Background(), "user-1", "Trashed note", nil)
+	note, _ := svc.Create(context.Background(), "user-1", "Trashed note", nil, 1)
 	svc.SoftDelete(context.Background(), note.ID, "user-1")
 
 	req := httptest.NewRequest(http.MethodGet, "/api/notes/trash", nil)
@@ -222,7 +222,7 @@ func TestHandler_ListTrashed(t *testing.T) {
 func TestHandler_Restore(t *testing.T) {
 	router, svc := setupTestRouter("user-1")
 
-	note, _ := svc.Create(context.Background(), "user-1", "Restore me", nil)
+	note, _ := svc.Create(context.Background(), "user-1", "Restore me", nil, 1)
 	svc.SoftDelete(context.Background(), note.ID, "user-1")
 
 	req := httptest.NewRequest(http.MethodPost, "/api/notes/"+note.ID+"/restore", nil)
@@ -257,7 +257,7 @@ func TestHandler_Restore_NotFound(t *testing.T) {
 func TestHandler_PermanentDelete(t *testing.T) {
 	router, svc := setupTestRouter("user-1")
 
-	note, _ := svc.Create(context.Background(), "user-1", "Delete forever", nil)
+	note, _ := svc.Create(context.Background(), "user-1", "Delete forever", nil, 1)
 	svc.SoftDelete(context.Background(), note.ID, "user-1")
 
 	req := httptest.NewRequest(http.MethodDelete, "/api/notes/"+note.ID+"/permanent", nil)
