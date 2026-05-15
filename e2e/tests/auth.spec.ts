@@ -7,7 +7,7 @@ test.describe('Authentication', () => {
     await expect(page.locator('h1')).toHaveText('Login')
   })
 
-  test('register a new user redirects to gallery', async ({ page }) => {
+  test('register a new user redirects to napkin page', async ({ page }) => {
     const uniqueEmail = `user-${Date.now()}@test.com`
 
     await page.goto('/register')
@@ -17,10 +17,10 @@ test.describe('Authentication', () => {
     await page.click('button[type="submit"]')
 
     await expect(page).toHaveURL('/')
-    await expect(page.locator('.gallery__title')).toHaveText('Your Napkins')
+    await expect(page.locator('.napkin-page__input')).toBeVisible()
   })
 
-  test('login with registered user arrives at gallery', async ({ page }) => {
+  test('login with registered user arrives at napkin page', async ({ page }) => {
     const uniqueEmail = `user-${Date.now()}@test.com`
 
     // First register
@@ -41,7 +41,7 @@ test.describe('Authentication', () => {
     await page.click('button[type="submit"]')
 
     await expect(page).toHaveURL('/')
-    await expect(page.locator('.gallery__title')).toHaveText('Your Napkins')
+    await expect(page.locator('.napkin-page__input')).toBeVisible()
   })
 
   test('wrong credentials shows error message', async ({ page }) => {

@@ -39,7 +39,7 @@ onMounted(() => {
 })
 
 function openNote(id: string) {
-  router.push(`/note/${id}`)
+  router.push(`/napkin/${id}`)
 }
 
 function handleRip(id: string) {
@@ -47,7 +47,7 @@ function handleRip(id: string) {
 }
 
 function createNew() {
-  router.push('/note')
+  router.push('/')
 }
 </script>
 
