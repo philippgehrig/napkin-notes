@@ -76,6 +76,11 @@ const preview = computed(() => {
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   touch-action: none;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.04);
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .napkin-card:hover {
