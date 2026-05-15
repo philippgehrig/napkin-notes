@@ -24,9 +24,14 @@
           </div>
           <div class="trash__tape" />
         </NapkinTexture>
-        <button class="trash__restore-btn" @click="handleRestore(note.id)">
-          Restore
-        </button>
+        <div class="trash__actions">
+          <button class="trash__restore-btn" @click="handleRestore(note.id)">
+            Restore
+          </button>
+          <button class="trash__delete-btn" @click="handlePermanentDelete(note.id)">
+            Delete Forever
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -52,6 +57,10 @@ function truncate(content: string): string {
 
 function handleRestore(id: string) {
   store.restoreNote(id)
+}
+
+function handlePermanentDelete(id: string) {
+  store.permanentlyDelete(id)
 }
 </script>
 

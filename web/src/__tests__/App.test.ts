@@ -8,7 +8,8 @@ function createTestRouter() {
   return createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: '/', component: { template: '<h1>Your Napkins</h1>' } },
+      { path: '/', component: { template: '<div class="napkin-page">Napkin</div>' } },
+      { path: '/gallery', component: { template: '<h1>Your Napkins</h1>' } },
       { path: '/login', component: { template: '<h1>Login</h1>' } },
     ],
   })
