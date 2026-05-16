@@ -3,7 +3,7 @@
     <header class="editor__header">
       <button class="editor__back-btn" @click="goBack">← Back</button>
       <div class="editor__actions">
-        <ExportButton v-if="noteId" :noteId="noteId" />
+        <ExportButton v-if="noteId" target-selector=".editor__wrapper" />
         <button class="editor__save-btn" @click="save">Save</button>
       </div>
     </header>
