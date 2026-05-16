@@ -14,6 +14,7 @@
 
     <div class="napkin-page__footer">
       <button class="napkin-page__new-btn" @click="newNapkin">New Napkin</button>
+      <ExportButton v-if="currentNoteId" target-selector=".napkin-page__napkin" />
       <button class="napkin-page__discard-btn" @click="discardNapkin">Discard</button>
     </div>
   </div>
@@ -24,6 +25,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useNotesStore } from '../stores/notesStore'
 import NapkinTexture from '../components/NapkinTexture.vue'
+import ExportButton from '../components/ExportButton.vue'
 
 const route = useRoute()
 const router = useRouter()

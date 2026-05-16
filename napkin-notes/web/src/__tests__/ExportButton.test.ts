@@ -2,14 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ExportButton from '../components/ExportButton.vue'
 
-// Mock the api client
-vi.mock('../api/client', () => ({
-  default: {
-    get: vi.fn(),
-  },
+vi.mock('html-to-image', () => ({
+  toPng: vi.fn(),
 }))
 
-import api from '../api/client'
+import { toPng } from 'html-to-image'
 
 describe('ExportButton', () => {
   beforeEach(() => {
@@ -18,18 +15,20 @@ describe('ExportButton', () => {
 
   it('renders with Export text', () => {
     const wrapper = mount(ExportButton, {
-      props: { noteId: 'note-1' },
+      props: { targetSelector: '.napkin' },
     })
     expect(wrapper.text()).toBe('Export')
   })
 
   it('shows loading state while exporting', async () => {
-    // Make the API call hang
-    const mockGet = vi.mocked(api.get)
-    mockGet.mockImplementation(() => new Promise(() => {}))
+    vi.mocked(toPng).mockImplementation(() => new Promise(() => {}))
+
+    const el = document.createElement('div')
+    el.className = 'napkin'
+    document.body.appendChild(el)
 
     const wrapper = mount(ExportButton, {
-      props: { noteId: 'note-1' },
+      props: { targetSelector: '.napkin' },
     })
 
     await wrapper.find('button').trigger('click')
@@ -37,57 +36,39 @@ describe('ExportButton', () => {
 
     expect(wrapper.text()).toBe('Exporting...')
     expect(wrapper.find('button').attributes('disabled')).toBeDefined()
-  })
 
-  it('calls API with correct URL and responseType', async () => {
-    const mockBlob = new Blob(['fake-png'], { type: 'image/png' })
-    const mockGet = vi.mocked(api.get)
-    mockGet.mockResolvedValue({ data: mockBlob })
-
-    // Mock URL.createObjectURL and revokeObjectURL
-    const mockUrl = 'blob:http://localhost/fake-url'
-    globalThis.URL.createObjectURL = vi.fn(() => mockUrl)
-    globalThis.URL.revokeObjectURL = vi.fn()
-
-    const wrapper = mount(ExportButton, {
-      props: { noteId: 'note-123' },
-    })
-
-    await wrapper.find('button').trigger('click')
-    // Wait for async operations
-    await vi.waitFor(() => {
-      expect(mockGet).toHaveBeenCalledWith('/notes/note-123/export?format=png', {
-        responseType: 'blob',
-      })
-    })
+    document.body.removeChild(el)
   })
 
   it('resets loading state after export completes', async () => {
-    const mockBlob = new Blob(['fake-png'], { type: 'image/png' })
-    const mockGet = vi.mocked(api.get)
-    mockGet.mockResolvedValue({ data: mockBlob })
+    vi.mocked(toPng).mockResolvedValue('data:image/png;base64,fake')
 
-    globalThis.URL.createObjectURL = vi.fn(() => 'blob:fake')
-    globalThis.URL.revokeObjectURL = vi.fn()
+    const el = document.createElement('div')
+    el.className = 'napkin'
+    document.body.appendChild(el)
 
     const wrapper = mount(ExportButton, {
-      props: { noteId: 'note-1' },
+      props: { targetSelector: '.napkin' },
     })
 
     await wrapper.find('button').trigger('click')
     await vi.waitFor(() => {
       expect(wrapper.text()).toBe('Export')
     })
+
+    document.body.removeChild(el)
   })
 
   it('resets loading state on error', async () => {
-    const mockGet = vi.mocked(api.get)
-    mockGet.mockRejectedValue(new Error('Network error'))
-
+    vi.mocked(toPng).mockRejectedValue(new Error('render failed'))
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
+    const el = document.createElement('div')
+    el.className = 'napkin'
+    document.body.appendChild(el)
+
     const wrapper = mount(ExportButton, {
-      props: { noteId: 'note-1' },
+      props: { targetSelector: '.napkin' },
     })
 
     await wrapper.find('button').trigger('click')
@@ -95,6 +76,19 @@ describe('ExportButton', () => {
       expect(wrapper.text()).toBe('Export')
     })
 
+    document.body.removeChild(el)
     consoleSpy.mockRestore()
+  })
+
+  it('does nothing if target element not found', async () => {
+    const wrapper = mount(ExportButton, {
+      props: { targetSelector: '.nonexistent' },
+    })
+
+    await wrapper.find('button').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(toPng).not.toHaveBeenCalled()
+    expect(wrapper.text()).toBe('Export')
   })
 })

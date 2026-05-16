@@ -10,29 +10,31 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import api from '../api/client'
+import { toPng } from 'html-to-image'
 
 const props = defineProps<{
-  noteId: string
+  targetSelector: string
 }>()
 
 const loading = ref(false)
 
 async function exportNote() {
+  const node = document.querySelector(props.targetSelector) as HTMLElement
+  if (!node) return
+
   loading.value = true
   try {
-    const response = await api.get(`/notes/${props.noteId}/export?format=png`, {
-      responseType: 'blob',
+    const dataUrl = await toPng(node, {
+      pixelRatio: 2,
+      backgroundColor: 'transparent',
     })
 
-    const url = URL.createObjectURL(response.data)
     const link = document.createElement('a')
-    link.href = url
+    link.href = dataUrl
     link.download = 'napkin.png'
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    URL.revokeObjectURL(url)
   } catch (error) {
     console.error('Export failed:', error)
   } finally {
